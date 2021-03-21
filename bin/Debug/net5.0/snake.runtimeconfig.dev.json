@@ -1,0 +1,8 @@
+{
+  "runtimeOptions": {
+    "additionalProbingPaths": [
+      "C:\\Users\\POWER CHALLENGE\\.dotnet\\store\\|arch|\\|tfm|",
+      "C:\\Users\\POWER CHALLENGE\\.nuget\\packages"
+    ]
+  }
+}
