@@ -38,7 +38,7 @@ namespace snake_game
                     selfCollide = true;
                 }
             }
-            return selfCollide || x > game.screenHeight || x < 0 || y > game.screenWidth || y < 0;
+            return selfCollide;
         }
         public void eat(){
             if (getHead() == game.apple.coordinate){
@@ -46,6 +46,9 @@ namespace snake_game
                 game.update();
             }
             else{
+                int x = body[0].Item1;
+                int y = body[0].Item2;
+                game.table[x][y] = ' ';
                 body.Remove(body[0]);
             }
         }

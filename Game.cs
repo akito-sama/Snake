@@ -6,10 +6,15 @@ namespace snake_game
 {
     public class Game
     {
-        public int screenWidth = 50;
+        public int screenWidth = 60;
         public int screenHeight = 22;
         public snake mySnake;
-        Dictionary<string, (int, int)> mouvements;
+        Dictionary<string, (int, int)> mouvements = new Dictionary<string, (int, int)>{
+                {"q", (0, -1)},
+                {"d", (0, 1)},
+                {"s", (1, 0)},
+                {"z", (-1, 0)}
+            };
         public int score = -1;
         Dictionary<char, char> opposite = new Dictionary<char, char>()
             {
@@ -20,47 +25,39 @@ namespace snake_game
             };
         char directChar = Convert.ToChar('d');
         public Apple apple;
+        public char[][] table;
+        bool error = false;
+        
         public Game(){
-            snake mySnake = new snake("otomodatchi", this);
-            this.mySnake = mySnake;
-            Apple apple = new Apple(this);
-            this.apple = apple;
-            this.draw();
-            Dictionary<string, (int, int)> dico = new Dictionary<string, (int, int)>{
-                {"q", (0, -1)},
-                {"d", (0, 1)},
-                {"s", (1, 0)},
-                {"z", (-1, 0)}
-            };
-            this.mouvements = dico;
+            this.mySnake = new snake("otomodatchi", this);
+            this.apple = new Apple(this);
             this.update();
+            this.table = new char[screenHeight][];
+            for (int i = 0; i < screenHeight; i++)
+            {
+                this.table[i] = new char[screenWidth];
+                for (int j = 0; j < screenWidth; j++)
+                {
+                    this.table[i][j] = ' ';
+                }
+            }
+            this.draw();
         }
         public void draw(){
-            for (int i = 0; i < screenHeight + 1; i++)
+            foreach ((int, int) item in mySnake.body)
             {
-                string str = "|";
-                for (int j = 0; j < screenWidth + 1; j++)
-                {
-                    if ((i, j) == apple.coordinate){
-                        str += "A";
-                    }
-                    else if (mySnake.body.Contains((i, j)))
-                    {
-                        if (mySnake.getHead() == (i, j))
-                        {
-                            str += "O";
-                        }
-                        else
-                        {
-                            str += "o";
-                        }
-                    }
-                    else{
-                        str += " ";
-                    }
-                }
-                str += "|";
-                System.Console.WriteLine(str);
+                table[item.Item1][item.Item2] = 'o';
+            }
+            int x = mySnake.getHead().Item1;
+            int y = mySnake.getHead().Item2;
+            table[x][y] = 'O';
+            table[apple.x_coordinate][apple.y_coordinate] = 'A';
+            foreach (var item in table)
+            {
+                System.Console.Write('|');
+                System.Console.Write(item);
+                System.Console.WriteLine('|');
+
             }
         }
         void change(){
@@ -80,9 +77,24 @@ namespace snake_game
                 Console.Clear();
                 change();
                 mySnake.move();
-                draw();
-                Thread.Sleep(200);
-                if (mySnake.isDead())
+                try{
+                    draw();
+                }
+                catch (IndexOutOfRangeException){
+                    error = true;
+                    foreach (var item in table)
+                    {
+                        System.Console.Write('|');
+                        System.Console.Write(item);
+                        System.Console.WriteLine('|');
+
+                    }
+                }
+                if ((200 - score * 3 >= 50))
+                    Thread.Sleep(200 - score * 4);
+                else
+                    Thread.Sleep(50);
+                if (error == true || mySnake.isDead())
                     break;
             }
         }
